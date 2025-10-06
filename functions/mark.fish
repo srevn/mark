@@ -345,10 +345,13 @@ function mark -d 'Bookmarking tool'
                     if test -d "$dest"
                         echo cd (string escape "$dest") | source -
                     else if test -f "$dest"
-                        set -l editor "$VISUAL"
-                        test -n "$editor"; or set editor "$EDITOR"
-                        test -n "$editor"; or set editor vi
-                        command $editor "$dest"
+                        if set -q VISUAL[1]
+                            command $VISUAL "$dest"
+                        else if set -q EDITOR[1]
+                            command $EDITOR "$dest"
+                        else
+                            command vi "$dest"
+                        end
                     end
                 else
                     echo "$dest"
