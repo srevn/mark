@@ -30,7 +30,7 @@ To change, run: set -U MARK_DIR <dir>
 ## Features
 
 - **Directory bookmarks**: Jump to directories with `mark BOOKMARK`
-- **File bookmarks**: Open files in `$EDITOR` with `mark BOOKMARK`
+- **File bookmarks**: Open files in `$VISUAL` with `mark BOOKMARK`
 - **Path resolution**: Use `$(mark BOOKMARK)` in command substitution to get the path
 
 ## Installation
