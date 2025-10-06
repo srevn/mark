@@ -119,8 +119,14 @@ function __mark_add
 
         case 1
             if test -e "$argv[1]"
-                set dest (realpath "$argv[1]" 2>/dev/null)
-                set bm (basename "$dest")
+                set -l resolved (realpath "$argv[1]" 2>/dev/null)
+                if test -n "$resolved"
+                    set dest "$resolved"
+                    set bm (basename "$dest")
+                else
+                    set dest "$argv[1]"
+                    set bm (basename "$dest")
+                end
             else
                 set bm "$argv[1]"
                 set dest (pwd)
@@ -128,12 +134,20 @@ function __mark_add
 
         case 2
             set bm "$argv[1]"
-            set dest (realpath "$argv[2]" 2>/dev/null)
+            if test -e "$argv[2]"
+                set -l resolved (realpath "$argv[2]" 2>/dev/null)
+                if test -n "$resolved"
+                    set dest "$resolved"
+                else
+                    set dest "$argv[2]"
+                end
+            else
+                set dest "$argv[2]"
+            end
 
         case '*'
             echo "mark: Too many arguments" >&2
             echo 'Usage: mark add [BOOKMARK] [DEST]' >&2
-            echo '       mark add DEST' >&2
             return 1
     end
 
