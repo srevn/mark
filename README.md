@@ -11,7 +11,8 @@ Use `set -U MARK_DIR <dir>` to change where bookmarks are stored.
 ```sh
 $ mark help
 Usage:
- mark (BOOKMARK|PATH)           Go to directory or open file in $EDITOR
+ mark BOOKMARK                  Navigate to bookmark (directory or file in $EDITOR)
+ mark PATH                      Create bookmark with basename as name (requires /)
  $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)
  mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)
                                     Default BOOKMARK: name of current directory
@@ -31,6 +32,7 @@ To change, run: set -U MARK_DIR <dir>
 
 - **Directory bookmarks**: Jump to directories with `mark BOOKMARK`
 - **File bookmarks**: Open files in `$VISUAL` with `mark BOOKMARK`
+- **Quick bookmarking**: Use `mark /path/to/location` to create a bookmark named after the basename
 - **Path resolution**: Use `$(mark BOOKMARK)` in command substitution to get the path
 
 ## Installation

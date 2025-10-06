@@ -1,6 +1,7 @@
 function __mark_usage
     echo 'Usage:' >&2
-    echo ' mark (BOOKMARK|PATH)           Go to directory or open file in $EDITOR' >&2
+    echo ' mark BOOKMARK                  Navigate to bookmark (directory or file in $EDITOR)' >&2
+    echo ' mark PATH                      Create bookmark with basename as name (requires /)' >&2
     echo ' $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)' >&2
     echo ' mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)' >&2
     echo '                                    Default BOOKMARK: name of current directory' >&2
@@ -320,25 +321,39 @@ function mark -d 'Bookmarking tool'
                 return 1
             end
 
-            set -l dest (__mark_resolve "$name")
-            if test -z "$dest"
-                if test -e "$name"
-                    if isatty stdout
-                        if test -d "$name"
-                            echo cd (string escape "$name") | source -
-                        else if test -f "$name"
-                            set -l editor "$VISUAL"
-                            test -n "$editor"; or set editor "$EDITOR"
-                            test -n "$editor"; or set editor vi
-                            command $editor "$name"
-                        end
-                    else
-                        realpath "$name"
+            if string match -q '*/*' -- "$name"
+                set -l bm (basename "$name")
+                set -l dest "$name"
+
+                if test -e "$dest"
+                    set -l resolved (realpath "$dest" 2>/dev/null)
+                    if test -n "$resolved"
+                        set dest "$resolved"
                     end
-                else
-                    echo "mark: No such bookmark or path: $name" >&2
+                end
+
+                __mark_validate_name "$bm"; or return $status
+
+                if __mark_resolve "$bm" >/dev/null
+                    echo "mark: Bookmark already exists: $bm -> "(__mark_print "$bm") >&2
                     return 1
                 end
+
+                if not test -e "$dest"
+                    echo "mark: Destination does not exist: $dest" >&2
+                    return 1
+                end
+
+                command ln -s "$dest" (__mark_bm_path "$bm"); or return $status
+                echo "Created bookmark: $bm -> "(__mark_print "$bm")
+                __mark_update_bookmark_completions
+                return 0
+            end
+
+            set -l dest (__mark_resolve "$name")
+            if test -z "$dest"
+                echo "mark: No such bookmark: $name" >&2
+                return 1
             else if test -e "$dest"
                 if isatty stdout
                     if test -d "$dest"
