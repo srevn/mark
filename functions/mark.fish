@@ -119,11 +119,18 @@ function __mark_add
             set bm (basename "$dest")
 
         case 1
-            if test -e "$argv[1]"; or string match -q '*/*' -- "$argv[1]"
-                set dest "$argv[1]"
+            set -l arg1 "$argv[1]"
+            if test "$arg1" = "."
+                set dest (pwd)
+                set bm (basename "$dest")
+            else if string match -q '*/*' -- "$arg1"
+                set dest "$arg1"
+                set bm (basename "$dest")
+            else if test -d "$arg1"
+                set dest "$arg1"
                 set bm (basename "$dest")
             else
-                set bm "$argv[1]"
+                set bm "$arg1"
                 set dest (pwd)
             end
 
