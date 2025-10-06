@@ -285,6 +285,9 @@ function mark -d 'Bookmarking tool'
                 return 1
             end
 
+            set -l old_path (__mark_print "$old")
+            echo "Renaming bookmark: $old -> $new ($old_path)"
+
             command mv (__mark_bm_path "$old") (__mark_bm_path "$new"); or return $status
             __mark_update_bookmark_completions
             return 0
