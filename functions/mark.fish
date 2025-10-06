@@ -322,32 +322,8 @@ function mark -d 'Bookmarking tool'
             end
 
             if string match -q '*/*' -- "$name"
-                set -l bm (basename "$name")
-                set -l dest "$name"
-
-                if test -e "$dest"
-                    set -l resolved (realpath "$dest" 2>/dev/null)
-                    if test -n "$resolved"
-                        set dest "$resolved"
-                    end
-                end
-
-                __mark_validate_name "$bm"; or return $status
-
-                if __mark_resolve "$bm" >/dev/null
-                    echo "mark: Bookmark already exists: $bm -> "(__mark_print "$bm") >&2
-                    return 1
-                end
-
-                if not test -e "$dest"
-                    echo "mark: Destination does not exist: $dest" >&2
-                    return 1
-                end
-
-                command ln -s "$dest" (__mark_bm_path "$bm"); or return $status
-                echo "Created bookmark: $bm -> "(__mark_print "$bm")
-                __mark_update_bookmark_completions
-                return 0
+                __mark_add (basename "$name") "$name"
+                return $status
             end
 
             set -l dest (__mark_resolve "$name")
