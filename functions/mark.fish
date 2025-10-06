@@ -166,7 +166,7 @@ function __mark_add
 
     command ln -s "$dest" (__mark_bm_path "$bm"); or return $status
 
-    echo "$bm -> "(__mark_print "$bm")
+    echo "Created bookmark: $bm -> "(__mark_print "$bm")
 
     __mark_update_bookmark_completions
 end
