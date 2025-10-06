@@ -1,17 +1,17 @@
 function __mark_usage
     echo 'Usage:' >&2
-    echo ' mark BOOKMARK                  Navigate to bookmark (directory or file in $EDITOR)' >&2
-    echo ' mark PATH                      Create bookmark with basename as name (requires /)' >&2
-    echo ' $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)' >&2
-    echo ' mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)' >&2
-    echo '                                    Default BOOKMARK: name of current directory' >&2
-    echo '                                    Default DEST: path to current directory' >&2
-    echo ' mark add DEST                  Create a bookmark for DEST' >&2
-    echo ' mark list                      List all bookmarks' >&2
-    echo ' mark rename OLD NEW            Change the name of a bookmark from OLD to NEW' >&2
-    echo ' mark remove BOOKMARK           Remove BOOKMARK' >&2
-    echo ' mark clean                     Remove bookmarks that have a missing destination' >&2
-    echo ' mark help                      Show this message' >&2
+    echo '  mark BOOKMARK                  Navigate to bookmark (directory or file in $VISUAL)' >&2
+    echo '  mark PATH                      Create bookmark with basename as name (requires /)' >&2
+    echo '  $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)' >&2
+    echo '  mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)' >&2
+    echo '                                   Default BOOKMARK: name of current directory' >&2
+    echo '                                   Default DEST: path to current directory' >&2
+    echo '  mark add DEST                  Create a bookmark for DEST' >&2
+    echo '  mark list                      List all bookmarks' >&2
+    echo '  mark rename OLD NEW            Change the name of a bookmark from OLD to NEW' >&2
+    echo '  mark remove BOOKMARK           Remove BOOKMARK' >&2
+    echo '  mark clean                     Remove bookmarks that have a missing destination' >&2
+    echo '  mark help                      Show this message' >&2
     echo >&2
     echo "Bookmarks are stored in: $MARK_DIR" >&2
     echo 'To change, run: set -U MARK_DIR <dir>' >&2
@@ -88,7 +88,7 @@ function __mark_print
     __mark_resolve "$argv" | string replace -r "^$HOME" '~'
 end
 
-function __mark_ls
+function __mark_list
     set -l dir (__mark_dir)
     for l in "$dir"/*
         test -L "$l"; or continue
@@ -96,7 +96,7 @@ function __mark_ls
     end
 end
 
-function __mark_rm
+function __mark_remove
     if not test -L (__mark_bm_path "$argv[1]")
         echo "mark: Bookmark not found: $argv[1]" >&2
         return 1
@@ -203,7 +203,7 @@ function __mark_update_bookmark_completions
 
     complete -c mark -k -n __fish_use_subcommand -r -a '(__mark_complete_directories)'
 
-    for bm in (__mark_ls | sort -r)
+    for bm in (__mark_list | sort -r)
         if test -z "$bm"
             continue
         end
@@ -253,7 +253,7 @@ function mark -d 'Bookmarking tool'
                 echo 'mark: Usage: mark remove BOOKMARK' >&2
                 return 1
             end
-            __mark_rm "$argv[2]"
+            __mark_remove "$argv[2]"
             return $status
 
         case list
@@ -261,7 +261,7 @@ function mark -d 'Bookmarking tool'
                 echo 'mark: Usage: mark list' >&2
                 return 1
             end
-            for bm in (__mark_ls)
+            for bm in (__mark_list)
                 echo "$bm -> "(__mark_print "$bm")
             end
             return 0
