@@ -1,16 +1,16 @@
 function __mark_usage
     echo 'Usage:' >&2
-    echo ' mark (BOOKMARK|PATH)        Go to directory or open file in $EDITOR' >&2
-    echo ' $(mark BOOKMARK)            Get path to BOOKMARK (for command substitution)' >&2
-    echo ' mark add [BOOKMARK] [DEST]  Create a BOOKMARK for DEST (file or directory)' >&2
-    echo '                                 Default BOOKMARK: name of current directory' >&2
-    echo '                                 Default DEST: path to current directory' >&2
-    echo ' mark add DEST               Create a bookmark for DEST' >&2
-    echo ' mark ls                     List all bookmarks' >&2
-    echo ' mark mv OLD NEW             Change the name of a bookmark from OLD to NEW' >&2
-    echo ' mark rm BOOKMARK            Remove BOOKMARK' >&2
-    echo ' mark clean                  Remove bookmarks that have a missing destination' >&2
-    echo ' mark help                   Show this message' >&2
+    echo ' mark (BOOKMARK|PATH)           Go to directory or open file in $EDITOR' >&2
+    echo ' $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)' >&2
+    echo ' mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)' >&2
+    echo '                                    Default BOOKMARK: name of current directory' >&2
+    echo '                                    Default DEST: path to current directory' >&2
+    echo ' mark add DEST                  Create a bookmark for DEST' >&2
+    echo ' mark list                      List all bookmarks' >&2
+    echo ' mark rename OLD NEW            Change the name of a bookmark from OLD to NEW' >&2
+    echo ' mark remove BOOKMARK           Remove BOOKMARK' >&2
+    echo ' mark clean                     Remove bookmarks that have a missing destination' >&2
+    echo ' mark help                      Show this message' >&2
     echo >&2
     echo "Bookmarks are stored in: $MARK_DIR" >&2
     echo 'To change, run: set -U MARK_DIR <dir>' >&2
@@ -195,9 +195,9 @@ function __mark_update_bookmark_completions
 
     complete -c mark -k -n __fish_use_subcommand -f -a help -d 'Show help'
     complete -c mark -k -n __fish_use_subcommand -x -a clean -d 'Remove bad bookmarks'
-    complete -c mark -k -n __fish_use_subcommand -x -a mv -d 'Rename bookmark'
-    complete -c mark -k -n __fish_use_subcommand -x -a rm -d 'Remove bookmark'
-    complete -c mark -k -n __fish_use_subcommand -f -a ls -d 'List bookmarks'
+    complete -c mark -k -n __fish_use_subcommand -x -a rename -d 'Rename bookmark'
+    complete -c mark -k -n __fish_use_subcommand -x -a remove -d 'Remove bookmark'
+    complete -c mark -k -n __fish_use_subcommand -f -a list -d 'List bookmarks'
     complete -c mark -k -n __fish_use_subcommand -x -a add -d 'Create bookmark'
 
     complete -c mark -k -n __fish_use_subcommand -r -a '(__mark_complete_directories)'
@@ -211,7 +211,7 @@ function __mark_update_bookmark_completions
             set desc '(broken)'
         end
 
-        complete -c mark -k -n '__fish_use_subcommand; or __fish_seen_subcommand_from rm mv' -r -a (echo "$bm" | string escape) -d "$desc"
+        complete -c mark -k -n '__fish_use_subcommand; or __fish_seen_subcommand_from remove rename' -r -a (echo "$bm" | string escape) -d "$desc"
     end
 end
 
@@ -247,17 +247,17 @@ function mark -d 'Bookmarking tool'
             __mark_add $argv[2..-1]
             return $status
 
-        case rm
+        case remove
             if not test "$numargs" -eq 2
-                echo 'mark: Usage: mark rm BOOKMARK' >&2
+                echo 'mark: Usage: mark remove BOOKMARK' >&2
                 return 1
             end
             __mark_rm "$argv[2]"
             return $status
 
-        case ls
+        case list
             if not test "$numargs" -eq 1
-                echo 'mark: Usage: mark ls' >&2
+                echo 'mark: Usage: mark list' >&2
                 return 1
             end
             for bm in (__mark_ls)
@@ -265,9 +265,9 @@ function mark -d 'Bookmarking tool'
             end
             return 0
 
-        case mv
+        case rename
             if not test "$numargs" -eq 3
-                echo 'mark: Usage: mark mv OLD NEW' >&2
+                echo 'mark: Usage: mark rename OLD NEW' >&2
                 return 1
             end
             set -l old "$argv[2]"

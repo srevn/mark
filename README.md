@@ -11,17 +11,17 @@ Use `set -U MARK_DIR <dir>` to change where bookmarks are stored.
 ```sh
 $ mark help
 Usage:
- mark (BOOKMARK|PATH)        Go to directory or open file in $EDITOR
- $(mark BOOKMARK)            Get path to BOOKMARK (for command substitution)
- mark add [BOOKMARK] [DEST]  Create a BOOKMARK for DEST (file or directory)
-                                 Default BOOKMARK: name of current directory
-                                 Default DEST: path to current directory
- mark add DEST               Create a bookmark for DEST
- mark ls                     List all bookmarks
- mark mv OLD NEW             Change the name of a bookmark from OLD to NEW
- mark rm BOOKMARK            Remove BOOKMARK
- mark clean                  Remove bookmarks that have a missing destination
- mark help                   Show this message
+ mark (BOOKMARK|PATH)           Go to directory or open file in $EDITOR
+ $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)
+ mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)
+                                    Default BOOKMARK: name of current directory
+                                    Default DEST: path to current directory
+ mark add DEST                  Create a bookmark for DEST
+ mark list                      List all bookmarks
+ mark rename OLD NEW            Change the name of a bookmark from OLD to NEW
+ mark remove BOOKMARK           Remove BOOKMARK
+ mark clean                     Remove bookmarks that have a missing destination
+ mark help                      Show this message
 
 Bookmarks are stored in: ~/.local/share/mark
 To change, run: set -U MARK_DIR <dir>
