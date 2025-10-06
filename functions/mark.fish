@@ -171,6 +171,21 @@ function __mark_add
     __mark_update_bookmark_completions
 end
 
+function __mark_clean
+    for bm in (__mark_list)
+        set -l dest (__mark_resolve "$bm")
+        if test -z "$dest"; or not test -e "$dest"
+            set -l bm_path (__mark_bm_path "$bm")
+            set -l broken_dest (readlink "$bm_path")
+
+            echo "Removing broken bookmark: $bm -> $broken_dest"
+
+            command rm "$bm_path"; or return $status
+        end
+    end
+    __mark_update_bookmark_completions
+end
+
 function __mark_complete_directories
     if not string match -q -- '*/*' (commandline -ct)
         return
@@ -298,13 +313,8 @@ function mark -d 'Bookmarking tool'
                 echo 'mark: Usage: mark clean' >&2
                 return 1
             end
-            for bm in (__mark_ls)
-                set -l resolved (__mark_resolve "$bm")
-                if test -z "$resolved"; or not test -e "$resolved"
-                    __mark_rm "$bm"
-                end
-            end
-            return 0
+            __mark_clean
+            return $status
 
         case -h --help help
             if not test "$numargs" -eq 1
