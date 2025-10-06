@@ -100,7 +100,11 @@ function __mark_rm
         echo "mark: Bookmark not found: $argv[1]" >&2
         return 1
     end
-    command rm -v (__mark_bm_path "$argv[1]"); or return $status
+
+    set -l bm_path (__mark_print "$argv[1]")
+    echo "Removing bookmark: $argv[1] -> $bm_path"
+
+    command rm (__mark_bm_path "$argv[1]"); or return $status
     __mark_update_bookmark_completions
 end
 
