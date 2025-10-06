@@ -119,15 +119,9 @@ function __mark_add
             set bm (basename "$dest")
 
         case 1
-            if test -e "$argv[1]"
-                set -l resolved (realpath "$argv[1]" 2>/dev/null)
-                if test -n "$resolved"
-                    set dest "$resolved"
-                    set bm (basename "$dest")
-                else
-                    set dest "$argv[1]"
-                    set bm (basename "$dest")
-                end
+            if test -e "$argv[1]"; or string match -q '*/*' -- "$argv[1]"
+                set dest "$argv[1]"
+                set bm (basename "$dest")
             else
                 set bm "$argv[1]"
                 set dest (pwd)
@@ -135,21 +129,19 @@ function __mark_add
 
         case 2
             set bm "$argv[1]"
-            if test -e "$argv[2]"
-                set -l resolved (realpath "$argv[2]" 2>/dev/null)
-                if test -n "$resolved"
-                    set dest "$resolved"
-                else
-                    set dest "$argv[2]"
-                end
-            else
-                set dest "$argv[2]"
-            end
+            set dest "$argv[2]"
 
         case '*'
             echo "mark: Too many arguments" >&2
             echo 'Usage: mark add [BOOKMARK] [DEST]' >&2
             return 1
+    end
+
+    set -l resolved (realpath "$dest" 2>/dev/null)
+    if test -n "$resolved"
+        set dest "$resolved"
+    else if not string match -q '/*' -- "$dest"
+        set dest (pwd)/"$dest"
     end
 
     __mark_validate_name "$bm"; or return $status
