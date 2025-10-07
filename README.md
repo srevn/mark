@@ -14,10 +14,9 @@ Usage:
   mark BOOKMARK                  Navigate to bookmark (directory or file in $VISUAL)
   mark PATH                      Create bookmark with basename as name (requires /)
   $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)
-  mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)
-                                   Default BOOKMARK: name of current directory
-                                   Default DEST: path to current directory
-  mark add DEST                  Create a bookmark for DEST
+  mark add [NAME] [DEST]         Create a bookmark NAME for DEST (file or directory)
+                                   Default NAME: basename of current directory
+                                   Default DEST: current directory
   mark list                      List all bookmarks
   mark rename OLD NEW            Change the name of a bookmark from OLD to NEW
   mark remove BOOKMARK           Remove BOOKMARK

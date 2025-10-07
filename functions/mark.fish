@@ -3,10 +3,9 @@ function __mark_usage
     echo '  mark BOOKMARK                  Navigate to bookmark (directory or file in $VISUAL)' >&2
     echo '  mark PATH                      Create bookmark with basename as name (requires /)' >&2
     echo '  $(mark BOOKMARK)               Get path to BOOKMARK (for command substitution)' >&2
-    echo '  mark add [BOOKMARK] [DEST]     Create a BOOKMARK for DEST (file or directory)' >&2
-    echo '                                   Default BOOKMARK: name of current directory' >&2
-    echo '                                   Default DEST: path to current directory' >&2
-    echo '  mark add DEST                  Create a bookmark for DEST' >&2
+    echo '  mark add [NAME] [DEST]         Create a bookmark NAME for DEST (file or directory)' >&2
+    echo '                                   Default NAME: basename of current directory' >&2
+    echo '                                   Default DEST: current directory' >&2
     echo '  mark list                      List all bookmarks' >&2
     echo '  mark rename OLD NEW            Change the name of a bookmark from OLD to NEW' >&2
     echo '  mark remove BOOKMARK           Remove BOOKMARK' >&2
@@ -120,13 +119,7 @@ function __mark_add
 
         case 1
             set -l arg1 "$argv[1]"
-            if test "$arg1" = "."
-                set dest (pwd)
-                set bm (basename "$dest")
-            else if string match -q '*/*' -- "$arg1"
-                set dest "$arg1"
-                set bm (basename "$dest")
-            else if test -d "$arg1"
+            if string match -q '*/*' -- "$arg1"
                 set dest "$arg1"
                 set bm (basename "$dest")
             else
@@ -140,7 +133,7 @@ function __mark_add
 
         case '*'
             echo "mark: Too many arguments" >&2
-            echo 'Usage: mark add [BOOKMARK] [DEST]' >&2
+            echo 'Usage: mark add [NAME] [DEST]' >&2
             return 1
     end
 
@@ -255,8 +248,7 @@ function mark -d 'Bookmarking tool'
     switch "$cmd"
         case add
             if not test "$numargs" -ge 1 -a "$numargs" -le 3
-                echo 'mark: Usage: mark add [BOOKMARK] [DEST]' >&2
-                echo '       mark add DEST' >&2
+                echo 'mark: Usage: mark add [NAME] [DEST]' >&2
                 return 1
             end
             __mark_add $argv[2..-1]
