@@ -8,7 +8,7 @@ A bookmarking tool for fish-shell that supports both files and directories.
 
 Use `set -U MARK_DIR <dir>` to change where bookmarks are stored.
 
-```sh
+```txt
 $ mark help
 Usage:
   mark BOOKMARK                  Navigate to bookmark (directory or file in $VISUAL)
@@ -17,6 +17,7 @@ Usage:
   mark add [NAME] [DEST]         Create a bookmark NAME for DEST (file or directory)
                                    Default NAME: basename of current directory
                                    Default DEST: current directory
+  mark get BOOKMARK              Print the destination path of BOOKMARK
   mark list                      List all bookmarks
   mark rename OLD NEW            Change the name of a bookmark from OLD to NEW
   mark remove BOOKMARK           Remove BOOKMARK

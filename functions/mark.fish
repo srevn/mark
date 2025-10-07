@@ -6,6 +6,7 @@ function __mark_usage
     echo '  mark add [NAME] [DEST]         Create a bookmark NAME for DEST (file or directory)' >&2
     echo '                                   Default NAME: basename of current directory' >&2
     echo '                                   Default DEST: current directory' >&2
+    echo '  mark get BOOKMARK              Print the destination path of BOOKMARK' >&2
     echo '  mark list                      List all bookmarks' >&2
     echo '  mark rename OLD NEW            Change the name of a bookmark from OLD to NEW' >&2
     echo '  mark remove BOOKMARK           Remove BOOKMARK' >&2
@@ -206,6 +207,7 @@ function __mark_update_bookmark_completions
     complete -c mark -k -n __fish_use_subcommand -x -a rename -d 'Rename bookmark'
     complete -c mark -k -n __fish_use_subcommand -x -a remove -d 'Remove bookmark'
     complete -c mark -k -n __fish_use_subcommand -f -a list -d 'List bookmarks'
+    complete -c mark -k -n __fish_use_subcommand -x -a get -d 'Get bookmark path'
     complete -c mark -k -n __fish_use_subcommand -x -a add -d 'Create bookmark'
 
     complete -c mark -k -n __fish_use_subcommand -r -a '(__mark_complete_directories)'
@@ -219,7 +221,7 @@ function __mark_update_bookmark_completions
             set desc '(broken)'
         end
 
-        complete -c mark -k -n '__fish_use_subcommand; or __fish_seen_subcommand_from remove rename' -r -a (echo "$bm" | string escape) -d "$desc"
+        complete -c mark -k -n '__fish_use_subcommand; or __fish_seen_subcommand_from get remove rename' -r -a (echo "$bm" | string escape) -d "$desc"
     end
 end
 
@@ -270,6 +272,19 @@ function mark -d 'Bookmarking tool'
             for bm in (__mark_list)
                 echo "$bm -> "(__mark_print "$bm")
             end
+            return 0
+
+        case get
+            if not test "$numargs" -eq 2
+                echo 'mark: usage: mark get BOOKMARK' >&2
+                return 1
+            end
+            set -l dest (__mark_resolve "$argv[2]")
+            if test -z "$dest"
+                echo "mark: no such bookmark: '$argv[2]'" >&2
+                return 1
+            end
+            echo "$dest"
             return 0
 
         case rename
