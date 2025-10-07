@@ -6,6 +6,7 @@ function __mark_usage
     echo '  mark add [NAME] [DEST]         Create a bookmark NAME for DEST (file or directory)' >&2
     echo '                                   Default NAME: basename of current directory' >&2
     echo '                                   Default DEST: current directory' >&2
+    echo '  mark add DEST                  Create a bookmark for DEST (requires /)' >&2
     echo '  mark get BOOKMARK              Print the destination path of BOOKMARK' >&2
     echo '  mark list                      List all bookmarks' >&2
     echo '  mark rename OLD NEW            Change the name of a bookmark from OLD to NEW' >&2

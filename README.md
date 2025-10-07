@@ -17,6 +17,7 @@ Usage:
   mark add [NAME] [DEST]         Create a bookmark NAME for DEST (file or directory)
                                    Default NAME: basename of current directory
                                    Default DEST: current directory
+  mark add DEST                  Create a bookmark for DEST (requires /)
   mark get BOOKMARK              Print the destination path of BOOKMARK
   mark list                      List all bookmarks
   mark rename OLD NEW            Change the name of a bookmark from OLD to NEW
