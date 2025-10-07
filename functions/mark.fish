@@ -19,17 +19,17 @@ end
 
 function __mark_validate_dir -a dir
     if test -z "$dir"
-        echo "mark: Invalid bookmark directory (empty)" >&2
+        echo "mark: invalid bookmark directory (empty)" >&2
         return 1
     end
 
     if not string match -q '/*' -- "$dir"
-        echo "mark: Bookmark directory must be absolute path: $dir" >&2
+        echo "mark: bookmark directory must be absolute path: '$dir'" >&2
         return 1
     end
 
     if string match -q '*/..' '*/../*' -- "$dir"
-        echo "mark: Bookmark directory cannot contain '..': $dir" >&2
+        echo "mark: bookmark directory cannot contain '..': $dir" >&2
         return 1
     end
 
@@ -38,27 +38,27 @@ end
 
 function __mark_validate_name -a name
     if test -z "$name"
-        echo "mark: Bookmark name cannot be empty" >&2
+        echo "mark: bookmark name cannot be empty" >&2
         return 1
     end
 
     if test "$name" = "." -o "$name" = ".."
-        echo "mark: Bookmark name cannot be '.' or '..'" >&2
+        echo "mark: bookmark name cannot be '.' or '..'" >&2
         return 1
     end
 
     if string match -q '*/*' -- "$name"
-        echo "mark: Bookmark name cannot contain '/': $name" >&2
+        echo "mark: bookmark name cannot contain '/': '$name'" >&2
         return 1
     end
 
     if string match -q -- '-*' "$name"
-        echo "mark: Bookmark name cannot start with '-': $name" >&2
+        echo "mark: bookmark name cannot start with '-': '$name'" >&2
         return 1
     end
 
     if string match -q -r '\s' -- "$name"
-        echo "mark: Bookmark name cannot contain whitespace: $name" >&2
+        echo "mark: bookmark name cannot contain whitespace: '$name'" >&2
         return 1
     end
 
@@ -97,12 +97,12 @@ end
 
 function __mark_remove
     if not test -L (__mark_bm_path "$argv[1]")
-        echo "mark: Bookmark not found: $argv[1]" >&2
+        echo "mark: bookmark not found: '$argv[1]'" >&2
         return 1
     end
 
     set -l bm_path (__mark_print "$argv[1]")
-    echo "Removing bookmark: $argv[1] -> $bm_path"
+    echo "mark: removed bookmark: '$argv[1]' -> $bm_path"
 
     command rm (__mark_bm_path "$argv[1]"); or return $status
     __mark_update_bookmark_completions
@@ -132,7 +132,7 @@ function __mark_add
             set dest "$argv[2]"
 
         case '*'
-            echo "mark: Too many arguments" >&2
+            echo "mark: too many arguments" >&2
             echo 'Usage: mark add [NAME] [DEST]' >&2
             return 1
     end
@@ -147,18 +147,18 @@ function __mark_add
     __mark_validate_name "$bm"; or return $status
 
     if __mark_resolve "$bm" >/dev/null
-        echo "mark: Bookmark already exists: $bm -> "(__mark_print "$bm") >&2
+        echo "mark: bookmark already exists: '$bm' -> "(__mark_print "$bm") >&2
         return 1
     end
 
     if not test -e "$dest"
-        echo "mark: Destination does not exist: $dest" >&2
+        echo "mark: destination does not exist: '$dest'" >&2
         return 1
     end
 
     command ln -s "$dest" (__mark_bm_path "$bm"); or return $status
 
-    echo "Created bookmark: $bm -> "(__mark_print "$bm")
+    echo "mark: bookmarked: '$bm' -> "(__mark_print "$bm")
 
     __mark_update_bookmark_completions
 end
@@ -170,7 +170,7 @@ function __mark_clean
             set -l bm_path (__mark_bm_path "$bm")
             set -l broken_dest (readlink "$bm_path")
 
-            echo "Removing broken bookmark: $bm -> $broken_dest"
+            echo "mark: removed bookmark: '$bm' -> $broken_dest"
 
             command rm "$bm_path"; or return $status
         end
@@ -230,15 +230,15 @@ function mark -d 'Bookmarking tool'
 
     if not test -d "$dir"
         if command mkdir -p "$dir"
-            echo "Created bookmark directory: $dir" >&2
+            echo "mark: created bookmark directory: '$dir'" >&2
         else
-            echo "mark: Failed to create bookmark directory: $dir" >&2
+            echo "mark: failed to create bookmark directory: '$dir'" >&2
             return 1
         end
     end
 
     if not test -w "$dir"
-        echo "mark: Bookmark directory is not writable: $dir" >&2
+        echo "mark: bookmark directory is not writable: '$dir'" >&2
         return 1
     end
 
@@ -248,7 +248,7 @@ function mark -d 'Bookmarking tool'
     switch "$cmd"
         case add
             if not test "$numargs" -ge 1 -a "$numargs" -le 3
-                echo 'mark: Usage: mark add [NAME] [DEST]' >&2
+                echo 'mark: usage: mark add [NAME] [DEST]' >&2
                 return 1
             end
             __mark_add $argv[2..-1]
@@ -256,7 +256,7 @@ function mark -d 'Bookmarking tool'
 
         case remove
             if not test "$numargs" -eq 2
-                echo 'mark: Usage: mark remove BOOKMARK' >&2
+                echo 'mark: usage: mark remove BOOKMARK' >&2
                 return 1
             end
             __mark_remove "$argv[2]"
@@ -264,7 +264,7 @@ function mark -d 'Bookmarking tool'
 
         case list
             if not test "$numargs" -eq 1
-                echo 'mark: Usage: mark list' >&2
+                echo 'mark: usage: mark list' >&2
                 return 1
             end
             for bm in (__mark_list)
@@ -274,26 +274,26 @@ function mark -d 'Bookmarking tool'
 
         case rename
             if not test "$numargs" -eq 3
-                echo 'mark: Usage: mark rename OLD NEW' >&2
+                echo 'mark: usage: mark rename OLD NEW' >&2
                 return 1
             end
             set -l old "$argv[2]"
             set -l new "$argv[3]"
 
             if not test -L (__mark_bm_path "$old")
-                echo "mark: Bookmark not found: $old" >&2
+                echo "mark: bookmark not found: '$old'" >&2
                 return 1
             end
 
             __mark_validate_name "$new"; or return $status
 
             if test -L (__mark_bm_path "$new")
-                echo "mark: Bookmark already exists: $new" >&2
+                echo "mark: bookmark already exists: '$new'" >&2
                 return 1
             end
 
             set -l old_path (__mark_print "$old")
-            echo "Renaming bookmark: $old -> $new ($old_path)"
+            echo "mark: renamed bookmark: '$old' -> '$new' ($old_path)"
 
             command mv (__mark_bm_path "$old") (__mark_bm_path "$new"); or return $status
             __mark_update_bookmark_completions
@@ -301,7 +301,7 @@ function mark -d 'Bookmarking tool'
 
         case clean
             if not test "$numargs" -eq 1
-                echo 'mark: Usage: mark clean' >&2
+                echo 'mark: usage: mark clean' >&2
                 return 1
             end
             __mark_clean
@@ -309,7 +309,7 @@ function mark -d 'Bookmarking tool'
 
         case -h --help help
             if not test "$numargs" -eq 1
-                echo 'mark: Usage: mark help' >&2
+                echo 'mark: usage: mark help' >&2
                 return 1
             end
             __mark_usage
@@ -329,7 +329,7 @@ function mark -d 'Bookmarking tool'
 
             set -l dest (__mark_resolve "$name")
             if test -z "$dest"
-                echo "mark: No such bookmark: $name" >&2
+                echo "mark: no such bookmark: $name" >&2
                 return 1
             else if test -e "$dest"
                 if isatty stdout
@@ -348,7 +348,7 @@ function mark -d 'Bookmarking tool'
                     echo "$dest"
                 end
             else
-                echo "mark: Destination for bookmark $name does not exist: $dest" >&2
+                echo "mark: destination for bookmark '$name' does not exist: $dest" >&2
                 return 1
             end
     end
